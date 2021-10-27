@@ -16,30 +16,30 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Compress all responses
-  app.use(compression());
+  // app.use(compression());
 
   // ResponseTime
-  app.use(responseTime((request: Request, response: Response, time: number ) => {
-
-    if (env.api.responseTime.header ||
-      request.query[env.api.responseTime.flag]) {
-      const timeFixed = time.toFixed(3);
-
-      response.set('X-Response-Time', `${timeFixed}ms`);
-    }
-
-  }));
+  // app.use(responseTime((request: Request, response: Response, time: number ) => {
+  //
+  //   if (env.api.responseTime.header ||
+  //     request.query[env.api.responseTime.flag]) {
+  //     const timeFixed = time.toFixed(3);
+  //
+  //     response.set('X-Response-Time', `${timeFixed}ms`);
+  //   }
+  //
+  // }));
 
   // Log every request to the console
   // app.use(morgan(env.api.morgan));
 
   // Enable CORS middleware
-  app.use(cors(env.cors));
+  // app.use(cors(env.cors));
 
   // Set Helmet
-  app.use(helmet.hidePoweredBy({ setTo: env.project.poweredBy }));
-  app.use(helmet.frameguard({ action: 'sameorigin' }));
-  app.use(helmet.xssFilter());
+  // app.use(helmet.hidePoweredBy({ setTo: env.project.poweredBy }));
+  // app.use(helmet.frameguard({ action: 'sameorigin' }));
+  // app.use(helmet.xssFilter());
 
   // Launch the app
   await app.listen(env.project.port);

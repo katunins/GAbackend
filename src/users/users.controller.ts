@@ -1,63 +1,53 @@
 import {
   Body,
-  Controller,
-  Delete,
-  Get,
-  Header,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Put,
+  Controller, HttpCode, HttpStatus, Post, UseFilters, Headers
 } from '@nestjs/common';
-import { CreateUsersDto } from './dto/create-users.dto';
-import { UpdateUsersDto } from './dto/update-users.dto';
 import { UsersService } from './users.service';
+import { BadRequestFilter } from '../mongo-exception.filter';
+import { UserDto } from './dto/user.dto';
+import { LoginDto } from './dto/login.dto';
 import { User } from './schemas/users.schema';
-
-// express
-// app.use((req, res, next) => {
-//   res.status(201).end('Poka')
-// })
 
 @Controller('users')
 export class UsersController {
 
-  constructor(private readonly userssService: UsersService) {
+  constructor(private readonly usersService: UsersService) {
+  }
+
+  @Post('signup')
+  @UseFilters(BadRequestFilter)
+  @HttpCode(HttpStatus.CREATED)
+  signUp(@Body() userDto: UserDto, @Headers() headers) {
+    return this.usersService.createUser(userDto, headers);
+  }
+
+  @Post('login')
+  @UseFilters(BadRequestFilter)
+  @HttpCode(HttpStatus.ACCEPTED)
+  SignIn(@Body() loginDto: LoginDto, @Headers() headers) {
+    return this.usersService.getUser(loginDto, headers);
   }
 
   // @Get()
-  // // @Redirect('https://google.com', 301)
-  // getAll(@Req() req: Request, @Res() res: Response): string {
-  //   res.status(201).end('Poke')
-  //   return 'getAll'
+  // @HttpCode(HttpStatus.OK)
+  // getAll(): Promise<User[]> {
+  //   return this.usersService.getAll();
   // }
-
-  @Get()
-  getAll(): Promise<User[]> {
-    return this.userssService.getAll()
-  }
-
-  @Get(':id')
-  getOne(@Param('id') id: string): Promise<User> {
-    return this.userssService.getById(id)
-  }
-
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @Header('Cache-Control', 'none')
-  create(@Body() createUserDto: CreateUsersDto): Promise<User> {
-    return this.userssService.create(createUserDto)
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string): Promise<User> {
-    return this.userssService.remove(id)
-  }
-
-  @Put(':id')
-  update(@Body() updateUserDto: UpdateUsersDto, @Param('id') id: string): Promise<User> {
-    return this.userssService.update(id, updateUserDto)
-  }
+  //
+  // @Get(':id')
+  // getOne(@Param('id') id: string): Promise<User> {
+  //   return this.usersService.getById(id);
+  // }
+  //
+  //
+  // @Delete(':id')
+  // remove(@Param('id') id: string): Promise<User> {
+  //   return this.usersService.remove(id);
+  // }
+  //
+  // @Put(':id')
+  // update(@Body() updateUserDto: LoginDto, @Param('id') id: string): Promise<User> {
+  //   return this.usersService.update(id, updateUserDto);
+  // }
 
 }

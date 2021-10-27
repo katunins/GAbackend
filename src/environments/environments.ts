@@ -1,40 +1,41 @@
 export const env = {
-  project : {
-    name : 'App API',
+  project: {
+    name: 'App API',
     description: 'App API',
     poweredBy: 'App',
     email: 'hi@app.es',
-    port: 3000
+    port: 3000,
   },
   microservices: {
-    headers: { 'content-type': 'application/json'},
+    headers: { 'content-type': 'application/json' },
   },
   api: {
     morgan: 'dev',
-    responseTime : {
-      header : false,
-      flag : 'response-timer'
+    responseTime: {
+      header: false,
+      flag: 'response-timer',
     },
     pagination: {
       limit: 10,
       page: 1,
-      skip: 0
+      skip: 0,
     },
   },
-  upload : {
-    path : '../data/uploads',
-    size : '10mb'
+  upload: {
+    path: '../data/uploads',
+    size: '10mb',
   },
-  cors : {
+  cors: {
     origin: true,
     methods: ['GET', 'PATCH', 'POST', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Content-Length'],
-    exposedHeaders: ['x-provider', 'limit', 'page', 'count', 'X-Response-Time']
+    exposedHeaders: ['x-provider', 'limit', 'page', 'count', 'X-Response-Time'],
   },
-  mongodb : {
+  mongodb: {
     uri: 'mongodb://database:27017/rexpo',
     uriTest: 'mongodb://database:27017/rexpo-test',
     debug: false,
   },
-
+  secret: 'fweifhwieohfiowh',
+  salt: 10
 };

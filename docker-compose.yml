@@ -8,18 +8,25 @@ services:
     ports:
       - "8080:3000"
     environment:
-      - DB_URL=mongodb://db_mongo
+      - DB_URL=mongodb://user:wellcome@db_mongo/grandAlbum
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-      
+
   db:
     image: mongo
     container_name: db_mongo
+
     volumes:
       - mongodata:/data/db
+      - ./mongod.conf:/etc/mongod.conf
+
     ports:
       - "27017:27017"
 
+#    command: --auth
+    command:
+    - '-f'
+    - '/etc/mongod.conf'
 volumes:
-  mongodata: 
+  mongodata:
