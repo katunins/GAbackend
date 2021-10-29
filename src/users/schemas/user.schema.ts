@@ -21,9 +21,6 @@ export class User {
   about: string;
 
   @Prop()
-  accessToken: string;
-
-  @Prop()
   birthday: string;
 
   @Prop({ type: [Object] })
@@ -33,4 +30,4 @@ export class User {
   }];
 }
 
-export const UsersSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User);

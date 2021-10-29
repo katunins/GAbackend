@@ -22,7 +22,7 @@ export const env = {
     },
   },
   upload: {
-    path: '../data/uploads',
+    path: './uploads',
     size: '10mb',
   },
   cors: {
@@ -37,5 +37,6 @@ export const env = {
     debug: false,
   },
   secret: 'fweifhwieohfiowh',
-  salt: 10
+  salt: 10,
+
 };

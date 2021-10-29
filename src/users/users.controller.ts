@@ -1,12 +1,17 @@
 import {
   Body,
-  Controller, HttpCode, HttpStatus, Post, UseFilters, Headers
+  Controller, HttpCode, HttpStatus, Post, UseFilters, Headers, Req, Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { BadRequestFilter } from '../mongo-exception.filter';
 import { UserDto } from './dto/user.dto';
 import { LoginDto } from './dto/login.dto';
-import { User } from './schemas/users.schema';
+import { User } from './schemas/user.schema';
+
+export interface IUserUpdateData {
+  id: string;
+  userData: UserDto;
+}
 
 @Controller('users')
 export class UsersController {
@@ -17,37 +22,21 @@ export class UsersController {
   @Post('signup')
   @UseFilters(BadRequestFilter)
   @HttpCode(HttpStatus.CREATED)
-  signUp(@Body() userDto: UserDto, @Headers() headers) {
-    return this.usersService.createUser(userDto, headers);
+  signUp(@Body() userDto: UserDto): Promise<User> {
+    return this.usersService.createUser(userDto);
   }
 
   @Post('login')
   @UseFilters(BadRequestFilter)
   @HttpCode(HttpStatus.ACCEPTED)
-  SignIn(@Body() loginDto: LoginDto, @Headers() headers) {
-    return this.usersService.getUser(loginDto, headers);
+  signIn(@Body() loginDto: LoginDto, @Req() req: any, @Res() res: any): Promise<User> {
+    return this.usersService.getUser(loginDto, req, res);
   }
 
-  // @Get()
-  // @HttpCode(HttpStatus.OK)
-  // getAll(): Promise<User[]> {
-  //   return this.usersService.getAll();
-  // }
-  //
-  // @Get(':id')
-  // getOne(@Param('id') id: string): Promise<User> {
-  //   return this.usersService.getById(id);
-  // }
-  //
-  //
-  // @Delete(':id')
-  // remove(@Param('id') id: string): Promise<User> {
-  //   return this.usersService.remove(id);
-  // }
-  //
-  // @Put(':id')
-  // update(@Body() updateUserDto: LoginDto, @Param('id') id: string): Promise<User> {
-  //   return this.usersService.update(id, updateUserDto);
-  // }
-
+  @Post('update')
+  @UseFilters(BadRequestFilter)
+  @HttpCode(HttpStatus.ACCEPTED)
+  update(@Body() data: IUserUpdateData): Promise<User> {
+    return this.usersService.updateUser(data);
+  }
 }
