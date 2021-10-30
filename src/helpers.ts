@@ -2,8 +2,8 @@ import { env } from './environments/environments';
 import { sign, verify, decode } from 'jsonwebtoken';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { UserDto } from './users/dto/user.dto';
-import { Error } from 'mongoose';
 import { extname } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 
 interface IGetAccessToken {
   id: string;
@@ -44,8 +44,15 @@ export const generateFilename = (file) => {
   return `${name}__${Date.now()}${ext}`;
 };
 
-export const generatePath = (requestPath) => {
-  return `${env.upload.path}/${requestPath}`;
+export const createPath = (pathString) => {
+  let path = '';
+  pathString.split('/').forEach(item => {
+    path += item + '/';
+    if (!existsSync(path)) {
+      mkdirSync(path);
+    }
+  });
+  return path;
 };
 
 export const splitToken = (accessToken: string) => {

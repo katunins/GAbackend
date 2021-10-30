@@ -36,7 +36,7 @@ export const env = {
     uriTest: 'mongodb://database:27017/rexpo-test',
     debug: false,
   },
-  secret: 'fweifhwieohfiowh',
+  secret: 'feiD77DnnoOISqO',
   salt: 10,
 
 };
