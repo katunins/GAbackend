@@ -14,7 +14,7 @@ export class UsersService {
   constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>) {
   }
 
-  async createUser(userDto: UserDto): Promise<User> {
+  async createUser(userDto: UserDto, req, res): Promise<User> {
     const checkIfExist = await this.UserModel.findOne({ email: userDto.email });
     if (checkIfExist) {
       throw new HttpException('Пользователь с таким email уже существует', HttpStatus.FORBIDDEN);
@@ -23,23 +23,25 @@ export class UsersService {
     const user = new this.UserModel({ ...userDto, password: hash });
 
     await user.save();
-    return removeUserPassword(user);
+    const newToken = await getAccessToken({ id: user._id, deviceId: req.headers.deviceid });
+    return res.set('Authorization', `Bearer ${newToken}`).json(removeUserPassword(user));
   }
 
   async getUser(loginDto: LoginDto, req, res): Promise<User> {
-    if (!loginDto.email || !loginDto.password) {
+    const { email, password } = loginDto;
+    if (!email || !password) {
       throw new HttpException('Проверьте введенные данные', HttpStatus.FORBIDDEN);
     }
-    const user = await this.UserModel.findOne({ email: loginDto.email });
+    const user = await this.UserModel.findOne({ email });
     if (!user) {
       throw new HttpException('Пользователь с таким email не существует', HttpStatus.FORBIDDEN);
     }
-    const passwordCheck = await bcrypt.compare(loginDto.password, user.password);
+    const passwordCheck = await bcrypt.compare(password, user.password);
     if (!passwordCheck) {
       throw new HttpException('Не верный пароль', HttpStatus.FORBIDDEN);
     }
-    const userDeviceId = req.headers?.deviceid;
-    const newToken = await getAccessToken({ id: user._id, deviceId: userDeviceId });
+
+    const newToken = await getAccessToken({ id: user._id, deviceId: req.headers.deviceid });
     return res.set('Authorization', `Bearer ${newToken}`).json(removeUserPassword(user));
   }
 

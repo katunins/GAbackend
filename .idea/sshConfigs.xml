@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="2.56.91.34" id="568a9c43-d070-48a4-9c4a-475642f5db34" keyPath="$USER_HOME$/.ssh/nest_js" port="22" nameFormat="DESCRIPTIVE" username="pavel" />
+    </configs>
+  </component>
+</project>

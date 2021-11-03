@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller, HttpCode, HttpStatus, Post, UseFilters, Headers, Req, Res,
+  Controller, HttpCode, HttpStatus, Post, UseFilters, Headers, Req, Res, Put, Patch, Param, Get, Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { BadRequestFilter } from '../mongo-exception.filter';
@@ -19,21 +19,21 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {
   }
 
-  @Post('signup')
+  @Post()
   @UseFilters(BadRequestFilter)
   @HttpCode(HttpStatus.CREATED)
-  signUp(@Body() userDto: UserDto): Promise<User> {
-    return this.usersService.createUser(userDto);
+  signUp(@Body() userDto: UserDto, @Req() req: any, @Res() res: any): Promise<User> {
+    return this.usersService.createUser(userDto, req, res);
   }
 
-  @Post('login')
+  @Get()
   @UseFilters(BadRequestFilter)
   @HttpCode(HttpStatus.ACCEPTED)
-  signIn(@Body() loginDto: LoginDto, @Req() req: any, @Res() res: any): Promise<User> {
-    return this.usersService.getUser(loginDto, req, res);
+  async signIn(@Query() loginDto: LoginDto, @Req() req: any, @Res() res: any): Promise<User> {
+    return await this.usersService.getUser(loginDto, req, res);
   }
 
-  @Post('update')
+  @Patch()
   @UseFilters(BadRequestFilter)
   @HttpCode(HttpStatus.ACCEPTED)
   update(@Body() data: IUserUpdateData): Promise<User> {

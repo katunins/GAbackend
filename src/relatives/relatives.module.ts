@@ -1,9 +1,8 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { RelativesService } from './relatives.service';
-import { RelativesController } from './relatives.controller';
 import { Relative, RelativeSchema } from './schemas/relative.schema';
-import { UsersModule } from '../users/users.module';
+import { RelativesController } from './relatives.controller';
 
 @Module({
   providers: [RelativesService],

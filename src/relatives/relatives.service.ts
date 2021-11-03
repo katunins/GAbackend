@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { RelativeDto } from './dto/relative.dto';
 import { IRelativeUpdateData } from './relatives.controller';
+import { RelativesIdsDto } from './dto/relativesIds.dto';
+import { removeFilesBackground } from '../helpers';
 
 @Injectable()
 export class RelativesService {
@@ -15,18 +17,19 @@ export class RelativesService {
     return relative;
   }
 
-  async get(idArr: string[]): Promise<Relative[]> {
-    const relatives = await this.RelativeModel.find({ _id: { $in: idArr } });
+  async getRelatives(relativesIds: RelativesIdsDto): Promise<Relative[]> {
+    const relatives = await this.RelativeModel.find({ _id: { $in: relativesIds.relativesIds } });
     return relatives;
   }
 
   async updateRelative(data: IRelativeUpdateData): Promise<Relative> {
-    const relative = this.RelativeModel.findByIdAndUpdate(data.id, data.userData);
+    const relative = await this.RelativeModel.findByIdAndUpdate(data.id, data.userData);
     return relative;
   }
 
-  async deleteRelative(id: string) {
-    const result = await this.RelativeModel.findByIdAndDelete(id);
+  async deleteRelative(data: IRelativeUpdateData) {
+    setTimeout(() => removeFilesBackground([data.userData.userPic]), 10000);
+    const result = await this.RelativeModel.findByIdAndDelete(data.id);
     return result;
   }
 }

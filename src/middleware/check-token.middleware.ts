@@ -5,23 +5,22 @@ import { decodeToken, getAccessToken, splitToken } from '../helpers';
 export class CheckTokenMiddleware implements NestMiddleware {
 
   async use(@Req() req, @Res() res, next: () => void) {
-
     const userId = req.headers?.userid;
     const userDeviceId = req.headers?.deviceid;
     const bearer = req.headers?.authorization;
-    const route = req.route.path;
+    const route = req.route;
 
-    if (!userDeviceId || !userId) {
-      throw new HttpException('Неверные параметры', HttpStatus.FORBIDDEN);
-    }
+    const needToCheck = !(route.path === '/users/' && (route.methods?.get || route.methods?.post));
 
-    const needToCheck = route !== '/users/signup' && route !== '/users/login';
     if (needToCheck) {
       if (!bearer) {
         throw new HttpException('Не верный формат токена', HttpStatus.UNAUTHORIZED);
       }
-      const accessToken = bearer.split(' ')[1];
-      const { id, deviceId, expired } = await decodeToken(accessToken);
+      const accessTokenArr = bearer.split(' ')
+      if (accessTokenArr.length !==2) {
+        throw new HttpException('Не верный формат токена', HttpStatus.UNAUTHORIZED);
+      }
+      const { id, deviceId, expired } = await decodeToken(accessTokenArr[1]);
       if (id !== userId) {
         throw new HttpException('Не верный токен', HttpStatus.UNAUTHORIZED);
       }
@@ -31,10 +30,10 @@ export class CheckTokenMiddleware implements NestMiddleware {
       if (deviceId !== userDeviceId) {
         throw new HttpException('Приложение открыто на другом устройстве. Повторите попытку позже', HttpStatus.UNAUTHORIZED);
       }
-
       const newToken = await getAccessToken({ id: userId, deviceId: userDeviceId });
       res.set('Authorization', `Bearer ${newToken}`);
     }
+
 
     next();
   }

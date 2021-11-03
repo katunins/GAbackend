@@ -3,7 +3,8 @@ import { sign, verify, decode } from 'jsonwebtoken';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { UserDto } from './users/dto/user.dto';
 import { extname } from 'path';
-import { existsSync, mkdirSync } from 'fs';
+import { existsSync, mkdirSync, unlinkSync } from 'fs';
+import * as path from 'path';
 
 interface IGetAccessToken {
   id: string;
@@ -15,6 +16,13 @@ interface IDecodeToken extends IGetAccessToken {
 }
 
 export const getAccessToken = async ({ id, deviceId }: IGetAccessToken) => {
+
+  if (!deviceId || deviceId === '') {
+    throw new HttpException('Неверные параметры', HttpStatus.FORBIDDEN);
+  }
+  if (!id || id === '') {
+    throw new HttpException('Не верные параметры пользователя', HttpStatus.FORBIDDEN);
+  }
   const accessToken = await sign({
     id,
     deviceId,
@@ -53,6 +61,16 @@ export const createPath = (pathString) => {
     }
   });
   return path;
+};
+export const removeFilesBackground = (filesToDelete: string[]) => {
+  if (!filesToDelete) return;
+  filesToDelete.map(item => {
+    if (item === '') return;
+    const pathToDelete = path.resolve(item);
+    if (existsSync(pathToDelete)) {
+      unlinkSync(pathToDelete);
+    }
+  });
 };
 
 export const splitToken = (accessToken: string) => {

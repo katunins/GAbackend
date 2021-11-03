@@ -1,8 +1,19 @@
-import { Body, Controller, Param, Post, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param, Post,
+  Query, Req,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { generateFilename, createPath } from '../helpers';
+import { generateFilename, removeFilesBackground } from '../helpers';
+import { existsSync, mkdirSync, unlinkSync, unlink, access, stat, rename, constants } from 'fs';
 import { env } from '../environments/environments';
+import { BodyDto } from './dto/body.dto';
+import * as path from 'path';
 
 const imageFileFilter = (req, file, callback) => {
   // if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
@@ -13,12 +24,15 @@ const imageFileFilter = (req, file, callback) => {
 
 @Controller('storage')
 export class StorageController {
-  @Post('uploads/:path')
+  @Post()
   @UseInterceptors(
     FilesInterceptor('file', 20, {
       storage: diskStorage({
         destination: (req, file, cb) => {
-          const path = createPath(`${env.upload.path}/${req.headers.userid}/${req.params.path}`);
+          const path = `${env.upload.path}/${req.headers.userid}`;
+          if (!existsSync(path)) {
+            mkdirSync(path);
+          }
           cb(null, path);
         },
         filename: (req, file, callback) => {
@@ -28,11 +42,11 @@ export class StorageController {
       fileFilter: imageFileFilter,
     }),
   )
-  async uploadMultipleFiles(@UploadedFiles() files: Express.Multer.File[], @Param() params) {
+  async uploadMultipleFiles(@Body() body: BodyDto, @UploadedFiles() files: Express.Multer.File[]) {
+    setTimeout(() => removeFilesBackground(body.filesToDelete), 10000);
     const response = files.map(item => {
       return { originalname: item.originalname, path: item.path };
     });
     return response;
   }
-
 }

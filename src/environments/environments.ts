@@ -32,8 +32,7 @@ export const env = {
     exposedHeaders: ['x-provider', 'limit', 'page', 'count', 'X-Response-Time'],
   },
   mongodb: {
-    uri: 'mongodb://database:27017/rexpo',
-    uriTest: 'mongodb://database:27017/rexpo-test',
+    uri: 'mongodb://user:wellcome@nestjs.ikatunin.ru:27017/grandAlbum',
     debug: false,
   },
   secret: 'feiD77DnnoOISqO',

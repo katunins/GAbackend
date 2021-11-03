@@ -5,22 +5,23 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { CheckTokenMiddleware } from './middleware/check-token.middleware';
 import { UsersController } from './users/users.controller';
-import { RelativesController } from './relatives/relatives.controller';
 import { RelativesModule } from './relatives/relatives.module';
 import { StorageController } from './storage/storage.controller';
 import { MulterModule } from '@nestjs/platform-express';
+import { RelativesController } from './relatives/relatives.controller';
+import { env } from './environments/environments';
+import { NotesModule } from './notes/notes.module';
+import { NotesController } from './notes/notes.controller';
 
 @Module({
   imports: [
     UsersModule,
     RelativesModule,
+    NotesModule,
     MulterModule.register({
       dest: './files',
     }),
-    MongooseModule.forRoot('mongodb://user:wellcome@nestjs.ikatunin.ru:27017/grandAlbum', { useFindAndModify: false }),
-    // RelativesModule,
-    // MongooseModule.forRoot(`mongodb+srv://pavel:1q2w3e4r@cluster0.vejho.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`)
-    // MongooseModule.forRoot(process.env.DB_URL)
+    MongooseModule.forRoot(env.mongodb.uri, { useFindAndModify: false }),
 
   ],
   controllers: [AppController, StorageController],
@@ -31,6 +32,6 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(CheckTokenMiddleware)
-      .forRoutes(UsersController, RelativesController);
+      .forRoutes(UsersController, RelativesController, NotesController);
   }
 }

@@ -1,12 +1,15 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, Param, Query, Req, Res } from '@nestjs/common';
 import { AppService } from './app.service';
+import { env } from './environments/environments';
+import { existsSync } from 'fs';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) {
+  }
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get(':uploads/:id/:filename')
+  async getFile(@Param() param, @Req() req: any, @Res() res: any) {
+    res.sendFile(param.filename, { root: `${param.uploads}/${param.id}` });
   }
 }
