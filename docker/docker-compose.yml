@@ -1,0 +1,57 @@
+version: "3"
+
+networks:
+  default:
+    external:
+      name: network
+
+services:
+  back_app:
+    depends_on:
+      - db
+    restart: always
+    build: .
+
+    environment:
+      - DB_URL=mongodb://user:wellcome@db_mongo/grandAlbum
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    labels:
+      - traefik.http.routers.back_app.rule=Host(`www.nestjs.ikatunin.ru`, `nestjs.ikatunin.ru`)
+      - traefik.http.services.back_app.loadbalancer.server.port=3000
+
+  db:
+    image: mongo
+    container_name: db_mongo
+
+    volumes:
+      - mongodata:/data/db
+      - ./mongod.conf:/etc/mongod.conf
+
+    labels:
+      - traefik.enable=false
+
+#    ports:
+#      - '27017:27017'
+
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express
+    depends_on:
+      - db
+    labels:
+      - traefik.enable=false
+    environment:
+      - ME_CONFIG_OPTIONS_EDITORTHEME=default
+      - ME_CONFIG_MONGODB_SERVER=db
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=grandAlbum
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=user
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=wellcome
+    ports:
+      - '8081:8081'
+
+volumes:
+  mongodata:

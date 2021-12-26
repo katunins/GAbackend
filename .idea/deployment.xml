@@ -7,6 +7,10 @@
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
           </mappings>
+          <excludedPaths>
+            <excludedPath path="/docker/node_modules" />
+            <excludedPath path="/docker/uploads" />
+          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>
