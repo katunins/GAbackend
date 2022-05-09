@@ -21,29 +21,6 @@ certificatesResolvers:
       httpChallenge:
         entryPoint: web
 
-middlewares:
-  my-fail2ban:
-    plugin:
-      fail2ban:
-        rules:
-          bantime: "3h"
-          findtime: "10m"
-          maxretry: 4
-          enabled: true
-          urlregexp:
-            - ""
-          urlregexp: ""
-          ports: "80:443"
-
-          accessLog:
-  filePath: "/var/log/traefik.log"
-
-experimental:
-  plugins:
-    fail2ban:
-      moduleName: "github.com/tommoulard/fail2ban"
-      version: "v0.6.0"
-
 providers:
   docker:
     network: network
